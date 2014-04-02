@@ -51,6 +51,11 @@ int main()
 	miArbol->print(2);
 	miArbol->print(3);
 
+	miArbol->ancestors(4);
+	cout << endl << miArbol->height() << endl;
+	cout << miArbol->level_Of_Number(1) << endl;
+	cout << miArbol->max_Width() << endl;
+
 	delete miArbol;
 
 	return 0;

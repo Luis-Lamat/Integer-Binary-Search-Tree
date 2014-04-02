@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#include <stack>
 using namespace std;
 
 #include "tnode.h"
@@ -16,6 +18,10 @@ class BSTree //integer Binary Search Tree
 		int predecessor(tnode *r);
 		int successor(tnode *r);
 		int countRec(tnode *r); //recursive node counting method
+		int heightRec(tnode *r); //recursive height count
+		int get_Width_Rec(tnode* r, int level); //recursive level width count
+		int get_Max_Width_Rec(tnode* r); //recursive max width on tree count
+
 	public:
 		BSTree();
 		~BSTree();
@@ -24,6 +30,10 @@ class BSTree //integer Binary Search Tree
 		bool erase(int d);
 		void print(int option);
 		int count();
+		void ancestors(int d);
+		int height();
+		int level_Of_Number(int d);
+		int max_Width();
 };
 
 void BSTree::dest(tnode *r){
@@ -48,7 +58,7 @@ bool BSTree::find(int d){
 	{
 		if (aux->getData() == d)
 			return true;
-		aux = (d < aux->getData()) ? aux = aux->getLeft() : aux = aux->getRight();
+		aux = (d < aux->getData()) ? aux->getLeft() : aux->getRight();
 	}
 	return false;
 }
@@ -213,3 +223,72 @@ int BSTree::count(){
 	return countRec(root);
 }
 
+void BSTree::ancestors(int d){
+	tnode *aux = root;
+	stack<int> lineage;
+	while (aux != NULL)
+	{
+		if (aux->getData() == d)
+			break;
+		lineage.push(aux->getData());
+		aux = (d < aux->getData()) ? aux->getLeft() : aux->getRight();
+	}
+
+	int size = lineage.size();
+	for (int i = 0; i < size; ++i){
+		cout << lineage.top() << " ";
+		lineage.pop();
+	}
+}
+
+int BSTree::heightRec(tnode *r){
+	if(r == NULL)
+        return 0;
+    int left = heightRec(r->getLeft());
+    int right = heightRec(r->getRight());
+    return (1 + ((left > right)? left : right));
+}
+
+int BSTree::height(){
+	return heightRec(root);
+}
+
+int BSTree::level_Of_Number(int d){
+	tnode *aux = root;
+	int level = 0;
+	while (aux != NULL)
+	{
+		if (aux->getData() == d)
+			return level;
+		aux = (d < aux->getData()) ? aux->getLeft() : aux->getRight();
+		level++;
+	}
+	return -1;
+}
+
+int BSTree::get_Max_Width_Rec(tnode* r){
+
+  	int maxWidth = 0, width, h = heightRec(r);
+
+  	for(int i = 1; i <= h; i++){
+    	width = get_Width_Rec(r,i);
+    	if(width > maxWidth)
+    		maxWidth = width;
+  	}
+  	return maxWidth;
+}
+ 
+int BSTree::get_Width_Rec(tnode* r, int level){ //getting width of a level 
+
+  	if(r == NULL)
+  		return 0;
+   
+  	if(level == 1)
+    	return 1;
+             
+	return get_Width_Rec(r->getLeft(), level-1) + get_Width_Rec(r->getRight(), level-1);
+}
+
+int BSTree::max_Width(){
+	return get_Max_Width_Rec(root);
+}
